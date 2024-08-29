@@ -1,27 +1,17 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from sklearn.datasets import load_iris
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error
 import joblib
+from contextlib import asynccontextmanager
 
-
-
-#Créer une instance de FastAPI
+# Créer une instance de FastAPI
 app = FastAPI()
+model = joblib.load("iris_regressor.pkl")
 
 # Définir un modèle de requête
 class IrisRequest(BaseModel):
     sepal_width: float
     petal_length: float
     petal_width: float
-
-# Charger le modèle lors du démarrage de l'application
-@app.on_event("startup")
-def load_model():
-    global model
-    model = joblib.load("iris_regressor.pkl")
 
 # Point de terminaison pour faire une prédiction
 @app.post("/predict")
@@ -34,3 +24,7 @@ def predict(iris: IrisRequest):
 
     # Retourner la prédiction
     return {"predicted_sepal_length": prediction[0]}
+
+@app.get("/quentin")
+def quentin():
+    return {"message" : "Je suis un Excel Hero"}
